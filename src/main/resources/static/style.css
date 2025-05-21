@@ -5,11 +5,13 @@
 }
 
 
-body {
+body, html {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 100vh;
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
     padding-top: 100px;
     box-sizing: border-box;
     background-color: black;
@@ -30,7 +32,16 @@ h1 {
     width: 40%;
     align-self: center;
     padding: 10px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+
+
+.opcoes-usuario::-webkit-scrollbar {
+    display: none;
+}
+
 
 .optionButtons {
     display: flex;
@@ -106,6 +117,7 @@ label {
     margin-top: 20px;
     max-height: 600px;
     overflow-y: auto;
+    background-color: black;
 }
 
 .field-name {
@@ -121,7 +133,6 @@ label {
 
 
 .field-type {
-    border: 2px solid green;
     display: flex;
    border-radius: 5px;
     height: 38px;
@@ -156,6 +167,12 @@ img {
     display: flex;
     gap: 50px;
     justify-content: center;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: black;
 
 }
 
@@ -212,4 +229,25 @@ img {
 
 .trashIcon {
     width: 30px;
+}
+
+/* Telas muito grandes */
+@media (min-width: 1600px) {
+    .opcoes-usuario{
+        max-width: 1440px;
+    }
+}
+
+/* Notebooks pequenos */
+@media (max-width: 1023px) {
+    .opcoes-usuario {
+        width: 100%; font-size: 90%;
+    }
+}
+
+/* Tablets e abaixo */
+@media (max-width: 768px) {
+    .opcoes-usuario {
+        width: 100%; font-size: 90%;
+    }
 }

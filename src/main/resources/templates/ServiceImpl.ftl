@@ -11,17 +11,18 @@ public class ${className}ServiceImpl implements ${className}Service {
 
 private final ${className}Repository repository;
 
-public ${className}ServiceImpl(${className}Repository repository) {
-this.repository = repository;
-}
+public ${className}ServiceImpl(${className}Repository repository) { this.repository = repository; }
 
 @Override
-public List<${className}> findAll() {
-return repository.findAll();
-}
+public List<${className}> findAll() { return repository.findAll(); }
 
 @Override
-public ${className} save(${className} entity) {
-return repository.save(entity);
-}
+public ${className} save(${className} entity) { return repository.save(entity); }
+
+@Override
+public void delete(${className} entity) { repository.delete(entity); }
+
+@Override
+public ${className} findById(int id) { return null; }
+
 }
