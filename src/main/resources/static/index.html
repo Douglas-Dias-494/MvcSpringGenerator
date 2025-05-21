@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador Spring Boot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+
+</head>
+<body>
+<div class="header">
+<h1>Spring MVC Generator</h1>
+    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/spring/spring-original.svg" alt="Spring">
+</div>
+<div class="opcoes-usuario">
+<label>Nome do Projeto:</label>
+<input type="text" id="projectName" placeholder="Insira o nome do seu projeto..." />
+
+<label>Pacote Base:</label>
+<input type="text" id="basePackage" placeholder="com.seunome.nomedoprojeto" />
+    <div id="alertBox"></div>
+
+<div id="entities"></div>
+    <div class="optionButtons">
+<button class="post-btn" onclick="addEntity()">Adicionar Entidade</button>
+<button class="post-btn" onclick="generate()">Gerar Projeto</button>
+    </div>
+
+</div>
+
+
+<script>
+    function showAlert(message) {
+        const alertBox = document.getElementById("alertBox");
+        alertBox.innerText = message;
+        alertBox.style.display = "block";
+        setTimeout(() => {
+            alertBox.style.display = "none";
+        }, 5000);
+    }
+
+    function addEntity() {
+        const container = document.getElementById("entities");
+
+        const div = document.createElement("div");
+        div.className = "entity";
+        div.innerHTML = `
+<div class="entity-header">
+<h3 class="entity-title">📦 Nova Entidade</h3>
+  <button class="remove-entity-btn" type="button" onclick="removeEntity(this)">
+  <img class="trashIcon" src="img/trash-bin-trash-svgrepo-com.svg" alt="Deletar Entidade">
+</button>
+</div>
+
+  <label>Nome:</label>
+  <input type="text" class="entity-name" placeholder="Ex: Produto" oninput="updateEntityTitle(this)" />
+
+  <label>Campos:</label>
+  <div class="field-list">
+    <div class="field-entry">
+      <input type="text" class="field-name" placeholder="nome do campo" />
+      <select class="field-type">
+        <option value="String">String</option>
+        <option value="Integer">int</option>
+        <option value="Long">long</option>
+        <option value="Double">double</option>
+        <option value="Float">float</option>
+        <option value="Boolean">boolean</option>
+        <option value="LocalDate">LocalDate</option>
+        <option value="LocalDateTime">LocalDateTime</option>
+      </select>
+      <button class="deleteBtn" type="button" onclick="removeField(this)">Excluir</button>
+    </div>
+  </div>
+  <button class="addBtn" type="button" onclick="addField(this)">Adicionar Campo</button>
+    `;
+        container.appendChild(div);
+    }
+
+    function removeEntity(button) {
+        const entityDiv = button.closest(".entity");
+        entityDiv.remove();
+    }
+
+
+    function addField(button) {
+        const fieldList = button.parentElement.querySelector(".field-list");
+
+        const div = document.createElement("div");
+        div.className = "field-entry";
+        div.innerHTML = `
+      <input type="text" class="field-name" placeholder="nome do campo" />
+      <select class="field-type">
+        <option value="String">String</option>
+        <option value="Integer">Integer</option>
+        <option value="Long">Long</option>
+        <option value="Double">Double</option>
+        <option value="Boolean">Boolean</option>
+        <option value="LocalDate">LocalDate</option>
+        <option value="LocalDateTime">LocalDateTime</option>
+      </select>
+      <button class="deleteBtn" type="button" onclick="removeField(this)">Excluir</button>
+    `;
+        fieldList.appendChild(div);
+    }
+
+    function removeField(button) {
+        const fieldEntry = button.parentElement;
+        fieldEntry.remove();
+    }
+
+    async function generate() {
+        const applicationName = document.getElementById("projectName").value.trim();
+        const basePackage = document.getElementById("basePackage").value.trim();
+
+        if (!applicationName || !basePackage) {
+            showAlert("Preencha o nome do projeto e o pacote base.");
+            return;
+        }
+
+        const groupId = basePackage.split(".").slice(0, 2).join(".") || "com.exemplo";
+        const artifactId = applicationName.toLowerCase().replace(/\s+/g, "-");
+
+        const entities = [];
+        let valid = true;
+
+        document.querySelectorAll(".entity").forEach(e => {
+            const name = e.querySelector(".entity-name").value.trim();
+            if (!name) {
+                valid = false;
+                return;
+            }
+
+            const fields = {};
+            const fieldEntries = e.querySelectorAll(".field-entry");
+            if (fieldEntries.length === 0) {
+                valid = false;
+                return;
+            }
+
+            fieldEntries.forEach(entry => {
+                const fieldName = entry.querySelector(".field-name").value.trim();
+                const fieldType = entry.querySelector(".field-type").value;
+                if (!fieldName || !fieldType) {
+                    valid = false;
+                    return;
+                }
+                fields[fieldName] = fieldType;
+            });
+
+            entities.push({ name, fields });
+        });
+
+        if (!valid || entities.length === 0) {
+            showAlert("Preencha corretamente todas as entidades e seus campos.");
+            return;
+        }
+
+        const payload = {
+            applicationName,
+            groupId,
+            artifactId,
+            basePackage,
+            entities,
+            options: {}
+        };
+
+        try {
+            const response = await fetch("/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const link = document.createElement("a");
+                link.href = window.URL.createObjectURL(blob);
+                link.download = `${applicationName}.zip`;
+                link.click();
+            } else {
+                showAlert("Erro ao gerar o projeto.");
+            }
+        } catch (err) {
+            showAlert("Erro na conexão com o servidor.");
+            console.error(err);
+        }
+
+
+    }
+</script>
+</body>
+</html>
