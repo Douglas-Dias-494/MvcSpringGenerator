@@ -2,6 +2,7 @@ package ${packageName};
 
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import ${modelPackage}.${className};
 import ${repositoryPackage}.${className}Repository;
 import ${packageName}.${className}Service;
@@ -20,9 +21,9 @@ public List<${className}> findAll() { return repository.findAll(); }
 public ${className} save(${className} entity) { return repository.save(entity); }
 
 @Override
-public void delete(${className} entity) { repository.delete(entity); }
+public void delete(Long id) { repository.delete(id); }
 
 @Override
-public ${className} findById(int id) { return null; }
+public Optional<${className}> findById(Long id) { return repository.findById(id); }
 
 }
