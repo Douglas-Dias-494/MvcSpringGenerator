@@ -21,7 +21,7 @@ public List<${className}> findAll() { return repository.findAll(); }
 public ${className} save(${className} entity) { return repository.save(entity); }
 
 @Override
-public void delete(Long id) { repository.delete(id); }
+public void delete(Long id) { repository.deleteById(id); }
 
 @Override
 public Optional<${className}> findById(Long id) { return repository.findById(id); }
